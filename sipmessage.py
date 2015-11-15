@@ -45,8 +45,10 @@ class SIPMessage(object):
             parts = line.split(':', 1)
             self.fields[parts[0]] = parts[1].strip()
 
-        self.fields['Content'] = ''.join('%s\n' % line
-                                         for line in line_iter).strip()
+        if 'Content-Type' in self.fields and \
+                self.fields['Content-Type'] == 'application/sdp':
+            self.content = SDPHeader(''.join('%s\r\n' % line
+                                             for line in line_iter).strip())
 
     '''
     Check whether this SIPMessage matches the filter.
@@ -74,6 +76,9 @@ class SIPInvite(SIPMessage):
         super(SIPInvite, self).__init__(data)
         calls[self.fields['Call-ID']] = self
 
+    def __repr__(self):
+        return super(SIPInvite, self).__repr__() + '\n' + str(self.content)
+
 
 class SIPBye(SIPMessage):
     '''
@@ -86,3 +91,20 @@ class SIPBye(SIPMessage):
     '''
     def __init__(self, data):
         super(SIPBye, self).__init__(data)
+
+
+class SDPHeader:
+    '''
+    Holds an SDP header containing rtp stream information.
+    '''
+
+    def __init__(self, data):
+        self.fields = {}
+        lines = data.split('\r\n')
+        for line in lines:
+            parts = line.split('=', 1)
+            self.fields.setdefault(parts[0], []).append(parts[1])
+
+    def __repr__(self):
+        return ''.join('%s %s\r\n' % (k, v)
+                       for k, v in self.fields.iteritems())
