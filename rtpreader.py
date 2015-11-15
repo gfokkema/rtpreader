@@ -5,6 +5,7 @@ import pcap
 
 
 class RTPReader:
+    '''This class will read and parse a pcap source.'''
     linktypes = {
         pcap.DLT_RAW: lambda p: p[0:],
         pcap.DLT_EN10MB: lambda p: p[12:],
@@ -44,4 +45,5 @@ class RTPReader:
                 continue
 
             time = datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-            print(time, packet)
+            if packet.matches(''):
+                print(time, packet)

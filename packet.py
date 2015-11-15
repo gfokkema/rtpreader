@@ -26,6 +26,9 @@ class IPPacket:
                                       ord(data[9]))
         self.datagram = self.proto[1](data[self.header_len:])
 
+    def matches(self, match):
+        return self.datagram.matches(match)
+
     def __repr__(self):
         return self.__str__()
 
