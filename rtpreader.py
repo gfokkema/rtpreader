@@ -1,5 +1,4 @@
 from datetime import datetime
-from filter import Filter
 from frame import Frame
 
 import pcap
@@ -15,6 +14,7 @@ class RTPReader:
 
     def __init__(self, pcapfile):
         self.pcap = pcap.pcap(pcapfile)
+        self.pcap.setfilter('port 5060')
         self.link = self.linktypes.get(self.pcap.datalink())
         if self.link is None:
             raise NotImplementedError("Unsupported datalink type %d." %
@@ -29,5 +29,4 @@ class RTPReader:
                 continue
 
             time = datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-            if frame.matches(Filter()):
-                print(time, frame)
+            print(time, frame)

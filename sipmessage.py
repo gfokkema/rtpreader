@@ -1,4 +1,5 @@
 calls = {}
+ports = {}
 
 
 class SIPMessage(object):
@@ -33,7 +34,7 @@ class SIPMessage(object):
     Create a basic SIP message.
     '''
     def __init__(self, data):
-        lines = data.split('\r\n')
+        lines = data.strip().split('\r\n')
 
         self.fields = {}
         self.fields['Request-Line'] = lines[0]
@@ -47,16 +48,11 @@ class SIPMessage(object):
 
         if 'Content-Type' in self.fields and \
                 self.fields['Content-Type'] == 'application/sdp':
-            self.content = SDPHeader(''.join('%s\r\n' % line
-                                             for line in line_iter).strip())
+            line_iter.next()
+            self.content = SDPHeader(line_iter)
 
-    '''
-    Check whether this SIPMessage matches the filter.
-    Right now filter is a simple string,
-    this should be replaced by something more elaborate later.
-    '''
-    def matches(self, match):
-        return 'SIP' in match
+    def callid(self):
+        return self.fields['Call-ID']
 
     def __repr__(self):
         return '\n' + '\n'.join('  %s: %s' % (f, v)
@@ -74,7 +70,8 @@ class SIPInvite(SIPMessage):
     '''
     def __init__(self, data):
         super(SIPInvite, self).__init__(data)
-        calls[self.fields['Call-ID']] = self
+        calls[self.callid()] = self
+        ports[self.content.conninfo()] = self
 
     def __repr__(self):
         return super(SIPInvite, self).__repr__() + '\n' + str(self.content)
@@ -100,10 +97,14 @@ class SDPHeader:
 
     def __init__(self, data):
         self.fields = {}
-        lines = data.split('\r\n')
-        for line in lines:
+        for line in data:
             parts = line.split('=', 1)
             self.fields.setdefault(parts[0], []).append(parts[1])
+
+    def conninfo(self):
+        ip = self.fields['c'][0].split(' ')[2]
+        port = self.fields['m'][0].split(' ')[1]
+        return ip, port
 
     def __repr__(self):
         return ''.join('%s %s\r\n' % (k, v)

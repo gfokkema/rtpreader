@@ -18,9 +18,6 @@ class Datagram:
             raise NotImplementedError("IP Protocol %d not supported." % proto)
         return datagram(data)
 
-    def matches(self, filter_):
-        return filter_.datagram.matches()
-
     def __repr__(self):
         raise NotImplementedError()
 

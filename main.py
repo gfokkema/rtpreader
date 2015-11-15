@@ -1,5 +1,5 @@
 from rtpreader import RTPReader
-from sipmessage import calls
+from sipmessage import calls, ports
 
 import getopt
 import sys
@@ -31,6 +31,7 @@ def main():
     try:
         RTPReader(in_pcap).parse()
         print(calls)
+        print(ports)
     except NotImplementedError as err:
         print(str(err))
         sys.exit(2)

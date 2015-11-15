@@ -9,8 +9,5 @@ class Message:
     def __init__(self, data):
         self.data = data
 
-    def matches(self, match):
-        return False
-
     def __repr__(self):
         return '[unknown]'

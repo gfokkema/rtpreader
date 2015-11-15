@@ -17,9 +17,6 @@ class Frame:
                 ''.join("\\{:02x}".format(ord(c)) for c in data[:2]))
         return frame(data)
 
-    def matches(self, filter_):
-        return filter_.frame.matches() and self.data.matches(filter_)
-
     def __repr__(self):
         return self.data.__repr__()
 

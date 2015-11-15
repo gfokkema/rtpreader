@@ -15,9 +15,6 @@ class IPPacket:
         self.dst = inet_ntoa(data[16:20])
         self.datagram = Datagram.create(self.proto, data[self.header_len:])
 
-    def matches(self, match):
-        return self.datagram.matches(match)
-
     def __repr__(self):
         return self.__str__()
 
