@@ -11,18 +11,18 @@ class RTPReader:
         pcap.DLT_EN10MB: lambda p: p[12:],
         pcap.DLT_LINUX_SLL: lambda p: p[14:],
     }
+    frametypes = {
+        '\x08\x00': lambda p: p[2:],                            # IPv4
+        '\x81\x00': lambda p: RTPReader.frametypes.get(p[4:]),  # 802.1Q
+    }
 
     def __init__(self, pcapfile):
-        self.frametypes = {
-            '\x08\x00': lambda p: p[2:],                       # IPv4
-            '\x81\x00': lambda p: self.frametypes.get(p[4:]),  # 802.1Q
-        }
         self.pcap = pcap.pcap(pcapfile)
 
     def parse_link(self, data):
         parse = self.linktypes.get(self.pcap.datalink())
         if parse is None:
-            raise NotImplementedError("Unsupported datalink type. %d" %
+            raise NotImplementedError("Unsupported datalink type %d." %
                                       self.pcap.datalink())
         return parse(data)
 
