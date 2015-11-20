@@ -1,4 +1,4 @@
-from packet import IPPacket
+from network.packet import Packet
 
 
 class Frame:
@@ -21,11 +21,11 @@ class Frame:
         return self.data.__repr__()
 
 
-class EthernetFrame(Frame):
-    def __init__(self, data):
-        self.data = IPPacket(data[2:])
-
-
 class VLANFrame(Frame):
     def __init__(self, data):
         self.data = Frame.create(data[4:])
+
+
+class EthernetFrame(Frame):
+    def __init__(self, data):
+        self.data = Packet.create(data[2:])

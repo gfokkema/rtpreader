@@ -1,20 +1,26 @@
 from rtpreader import RTPReader
-from sipmessage import calls, ports
+from network.sipmessage import calls, ports
 
 import getopt
 import sys
+
+# Filter class will be directly translated into BPF format.
+# The filter can be initialized here and passed to incoming messages.
+# These messages can then update the filter when calls start or end.
+# Each message will inherit from a class and implement filter(..)
 
 
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                   "hi:o:",
-                                   ["help", "input-file=", "output-file="])
+                             "hi:o:",
+                             ["help", "input-file=", "output-file="])
     except getopt.GetoptError as err:
         print(str(err))
         usage()
         sys.exit(2)
 
+    # in_pcap = "/home/gerlof/gntel/puppet/bg10-eth0.3600-split.pcap"
     in_pcap = None
     # out_pcap = None
     for o, a in opts:

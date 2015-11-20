@@ -1,5 +1,5 @@
 from datetime import datetime
-from frame import Frame
+from network.frame import Frame
 
 import pcap
 
@@ -11,14 +11,18 @@ class RTPReader:
         pcap.DLT_EN10MB: lambda p: p[12:],
         pcap.DLT_LINUX_SLL: lambda p: p[14:],
     }
+    filter_ = 'port 5060'
 
     def __init__(self, pcapfile):
         self.pcap = pcap.pcap(pcapfile)
-        self.pcap.setfilter('port 5060')
+        self.pcap.setfilter(self.filter_)
         self.link = self.linktypes.get(self.pcap.datalink())
         if self.link is None:
             raise NotImplementedError("Unsupported datalink type %d." %
                                       self.pcap.datalink())
+
+    def setfilter(self, filter_):
+        self.pcap.setfilter(filter_)
 
     def parse(self):
         for (ts, data) in self.pcap:

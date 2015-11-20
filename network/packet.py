@@ -4,7 +4,17 @@ from socket import inet_ntoa
 import struct
 
 
-class IPPacket:
+class Packet:
+    @classmethod
+    def create(cls, data):
+        packet = IPPacket(data)
+        return packet
+    
+    def __repr__(self):
+        raise NotImplementedError()
+
+
+class IPPacket(Packet):
     def __init__(self, data):
         self.version = ord(data[0]) >> 4
         self.header_len = (ord(data[0]) & 0x0f) << 2
